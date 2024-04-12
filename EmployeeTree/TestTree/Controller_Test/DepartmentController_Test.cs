@@ -1,6 +1,8 @@
 ﻿using Employee.Controllers;
 using Employee.Requests;
 using Employee.Service.Interface;
+using Employee.Service.NonActionMethod;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -14,11 +16,13 @@ namespace TestTree.Controller_Test
     public class DepartmentController_Test
     {
         private  Mock<IDepartmentService> _departmentService;
+        private Mock<INonAction> _nonaction;
         private DepartmentController _controller;
         public DepartmentController_Test() { 
 
             _departmentService = new Mock<IDepartmentService>();
-            _controller = new DepartmentController(_departmentService.Object);
+            _nonaction = new Mock<INonAction>();
+            _controller = new DepartmentController(_departmentService.Object, _nonaction.Object);
         }
 
         [TestMethod]
@@ -46,6 +50,7 @@ namespace TestTree.Controller_Test
 
             //behaviour setup
             _departmentService.Setup(x => x.AddNewDepartment(departmentRequests)).ReturnsAsync(departmentRequests);
+            _nonaction.Setup(x => x.DepartServiceBus(departmentRequests));
 
             //act
             var result = await _controller.AddDepartment(departmentRequests);

@@ -1,5 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.Extensions.Configuration;
 using System.Data;
+using Microsoft.Data.SqlClient;
 
 namespace Employee.Model.Data
 {
@@ -7,11 +8,13 @@ namespace Employee.Model.Data
     {
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
+
         public ContextFile(IConfiguration configuration)
         {
             _configuration = configuration;
             _connectionString = _configuration.GetConnectionString("Connection");
         }
+
         public IDbConnection CreateConnection()
         {
             return new SqlConnection(_connectionString);

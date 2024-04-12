@@ -1,8 +1,12 @@
-﻿using Employee.Model;
+﻿using Azure.Messaging.ServiceBus;
+using Employee.Model;
 using Employee.Requests;
 using Employee.Service.Interface;
+using Employee.Service.NonActionMethod;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace Employee.Controllers
 {
@@ -11,17 +15,21 @@ namespace Employee.Controllers
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentService _departmentService;
-
-        public DepartmentController(IDepartmentService departmentService)
+        private readonly INonAction _nonAction;
+        public DepartmentController(IDepartmentService departmentService,INonAction nonAction)
         {
             _departmentService = departmentService;
+            _nonAction = nonAction;
         }
 
         [HttpPost]
         public async Task<List<DepartmentRequest>> AddDepartment(List<DepartmentRequest> department)
         {
             var result = await _departmentService.AddNewDepartment(department);
+            await _nonAction.DepartServiceBus(result); 
             return result;
         }
+        
+
     }
 }
